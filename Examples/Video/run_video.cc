@@ -24,7 +24,7 @@ string videoFile = "/home/wyy/data/slam/bytedance/xr/210926/210926.mp4";
 
 int main(int argc, char **argv) {
 
-    ORB_SLAM2::System SLAM(vocFile, parameterFile, ORB_SLAM2::System::MONOCULAR, 0);
+    ORB_SLAM2::System SLAM(vocFile, parameterFile, ORB_SLAM2::System::MONOCULAR);
 
     cv::VideoCapture cap(videoFile);
 
@@ -45,7 +45,9 @@ int main(int argc, char **argv) {
         auto t2 = chrono::system_clock::now();
         double track_time = chrono::duration_cast<chrono::milliseconds>(t2 - now).count();
         cout << 1000.0 / track_time << " " << state << std::endl;
-        // cout << T << endl;
+        if (state == 2) {
+            cout << T << endl;
+        }
         // if (track_time < 1000 - fps) {
         //     cv::waitKey(1000 / fps - track_time);
         // }
