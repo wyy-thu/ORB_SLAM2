@@ -21,6 +21,7 @@
 #ifndef FRAME_H
 #define FRAME_H
 
+#include<unistd.h>
 #include<vector>
 
 #include "MapPoint.h"
