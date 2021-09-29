@@ -11,14 +11,26 @@ string parameterFile = "/home/wyy/code/ORB_SLAM2/Examples/Video/video.yaml";
 string vocFile = "/home/wyy/code/ORB_SLAM2/Vocabulary/ORBvoc.txt";
 string videoFile = "/home/wyy/data/slam/bytedance/xr/210926/210926.mp4";
 
+        
+/*
+    enum eTrackingState{
+        SYSTEM_NOT_READY=-1,
+        NO_IMAGES_YET=0,
+        NOT_INITIALIZED=1,
+        OK=2,
+        LOST=3
+    };
+*/
+
 int main(int argc, char **argv) {
 
-    ORB_SLAM2::System SLAM(vocFile, parameterFile, ORB_SLAM2::System::MONOCULAR, true);
+    ORB_SLAM2::System SLAM(vocFile, parameterFile, ORB_SLAM2::System::MONOCULAR, 0);
 
     cv::VideoCapture cap(videoFile);
 
     auto start = chrono::system_clock::now();
-    int fps = 30;
+    int fps = 15;
+    int state;
     while (1) {
         cv::Mat frame;
         cap >> frame;   // 读取相机数据
@@ -29,11 +41,14 @@ int main(int argc, char **argv) {
         cv::resize(frame, frame_resized, cv::Size(960, 540));
         auto now = chrono::system_clock::now();
         auto timestamp = chrono::duration_cast<chrono::milliseconds>(now - start);
-        auto T = SLAM.TrackMonocular(frame_resized, double(timestamp.count())/1000.0);
+        auto T = SLAM.TrackMonocular(frame_resized, double(timestamp.count())/1000.0, state);
         auto t2 = chrono::system_clock::now();
-        cout << 1000.0 / chrono::duration_cast<chrono::milliseconds>(t2 - now).count() << std::endl;
+        double track_time = chrono::duration_cast<chrono::milliseconds>(t2 - now).count();
+        cout << 1000.0 / track_time << " " << state << std::endl;
         // cout << T << endl;
-        // cv::waitKey(1000 / fps);
+        // if (track_time < 1000 - fps) {
+        //     cv::waitKey(1000 / fps - track_time);
+        // }
     }
     SLAM.Shutdown();
     return 0;
